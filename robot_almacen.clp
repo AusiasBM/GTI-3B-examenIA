@@ -1,10 +1,8 @@
 
 (deffacts hechos 
-    ( max_movi 50)
     ( stockPalets naranjas 5 manzanas 3 caquis 7 uva 2 )
-    ( pedido naranjas 0 manzanas 6 caquis 0 uva 0 ) 
-    
-
+    ( pedido naranjas 2 manzanas 4 caquis 1 uva 3 ) 
+    ( robot cajas 0 maxPuede 3)
 )
 
 (defrule hayBastanteCajas
@@ -17,9 +15,15 @@
     ( printout t"No hay bastantes cajas para el pedido" crlf)
 )
 
-(defrule cogerCajas
-
+(defrule cogerCajasNaranja
+    f1 <- ( robot cajas ?n maxPuede ?p )
+    f2 <- ( pedido naranjas ?n manzanas ?m caquis ?c uva ?u )
+    ( test (?n <= p ))
+    =>
+    ( assert ( pedido naranjas (- ?n 1) manzanas ?m caquis ?c uva ?u ) )
 )
+
+
 
 (defrule depositarCajas
 
