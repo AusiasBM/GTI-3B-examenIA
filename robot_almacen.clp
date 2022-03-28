@@ -3,9 +3,10 @@
     ( stockPalets naranjas 5 manzanas 3 caquis 7 uva 2 )
     ( pedido naranjas 4 manzanas 0 caquis 0 uva 0 ) 
     ( robot cajas 0 maxPuede 3)
+    ( lineaPedido naranjas 0 manzanas 0 caquis 0 uva 0 )
 )
 
-(defrule hayBastanteCajas
+(defrule noHayBastantesCajas
     ( declare (salience 20))
     ( pedido naranjas ?n manzanas ?m caquis ?c uva ?u )
     ( stockPalets naranjas ?ns manzanas ?ms caquis ?cs uva ?us )
@@ -16,24 +17,24 @@
 )
 
 (defrule cogerCajasNaranja
-( declare (salience 2))
-    ?f1 <- ( robot cajas ?n maxPuede ?p )
-    ?f2 <- ( pedido naranjas ?n manzanas ?m caquis ?c uva ?u )
-    ( test ( and (< ?n ?p ) (> ?n 0 )))
+    ( declare (salience 2))
+    ( robot cajas ?nc maxPuede ?p )
+    ( pedido naranjas ?n $?palets )
+    ( lineaPedido naranajas ?nl $? )
+    ( test ( and (< ?nc ?p ) (< ?nl ?n )))
     =>
-    ( assert ( pedido naranjas (- ?n 1) manzanas ?m caquis ?c uva ?u ) )
+    ( assert ( pedido naranjas (- ?n 1) $?palets ) )
     ( assert ( robot cajas (+ ?n 1) maxPuede ?p ) )
-    ( retract ?f1 ?f2 )
     ( printout t"Cojo una caja de naranjas" crlf)
 )
 
 (defrule depositarCajas
-    ?f1 <- ( robot cajas ?n maxPuede ?p )
+    ( robot cajas ?n maxPuede ?p )
+    ( pedido naranjas ?nl manzanas ?ml caquis ?cl uva ?ul )
     ( pedido naranjas ?n manzanas ?m caquis ?c uva ?u )
-    ( test (<= ?n ?p ))
+    ( test (or (== ?n ?p ) (= ?nl ?n ) (= ?ml ?m ) (= ?cl ?c ) (= ?ul ?u ) ))
     =>
     ( assert ( robot cajas 0 maxPuede ?p ) )
-    ( retract ?f1 )
     ( printout t"Deposito las cajas" crlf)
 )
 
